@@ -9,6 +9,7 @@ import time
 class AStar:
 
     def __init__(self):
+
         self.directions = [ [-1, -1],[-1, 0], [-1, 1],
                             [0, -1], [0, 0], [0, 1],
                             [1, -1], [1, 0], [1, 1]] 
@@ -17,10 +18,14 @@ class AStar:
     def search(self, arena):
         solution_found = False
         open_nodes=arena.open_nodes.copy()
+        
+        #Loop through all the open nodes
         for _,current_node in open_nodes.items():
             if current_node== arena.goal_location:
                 arena.goal_location=current_node
                 solution_found = True
+
+            # Loop through all the possible actions
             for direction in self.directions:
                 x_ = current_node.x + direction[0]
                 y_ = current_node.y + direction[1]
@@ -63,6 +68,7 @@ if __name__ == "__main__":
     dijkstra = AStar()
     solution_found = False
     
+    # Paint the obstacles node white
     for i in range(arena.WIDTH):
         for j in range(arena.HEIGHT):
             node = Arena.Node(i, j)
@@ -71,6 +77,7 @@ if __name__ == "__main__":
                 if not obstacle_node:
                     arena.obstacle_nodes[(i, j)] = node
                 continue
+    
     arena.start_time = time.time()
     while(not solution_found): # your main loop
         # get all events
@@ -81,4 +88,6 @@ if __name__ == "__main__":
 
         # Update MAP - Pygame display
         arena.drawAll()
-    arena.displayResults()
+    arena.drawAll()
+    input()
+    # arena.displayResults()

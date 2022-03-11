@@ -19,9 +19,10 @@ class Arena:
         Node class contains details of a node like location, connection 
         with nearby nodes, parent nodes, distance from start point 
         """
-        def __init__(self, x ,y, parent=None):
+        def __init__(self, x ,y, theta, parent=None):
             self.x = x
             self.y = y
+            self.theta= theta
             self.costToCome = float('inf')
             self.parent = parent 
         def __lt__(self, other):
@@ -46,20 +47,21 @@ class Arena:
         self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
 
         self.nodes = {}
-        self.start_location = self.Node(0,0) 
+        self.start_location = self.Node(0,0,0) 
         self.start_location.costToCome=0
-        self.start_location.parent= self.Node(0,0)
+        self.start_location.parent= self.Node(0,0,0)
         self.open_nodes={}
         self.open_nodes[(self.start_location.x,self.start_location.y)]=self.start_location
         self.obstacle_nodes = {}
-        self.goal_location = self.Node(self.WIDTH-5,self.HEIGHT-5)
+        self.goal_location = self.Node(self.WIDTH-5,self.HEIGHT-5,0)
         # self.goal_location = self.Node(150,190)
-        sx=input("Enter x coordinate of Start Location(ex: 0): ")
-        sy=input("Enter y coordinate of Start Location(ex: 0): ")
-        gx=input("Enter x coordinate of Goal Location(ex: 100): ")
-        gy=input("Enter y coordinate of Goal Location(ex: 100): ")
-        self.start_location.x, self.start_location.y = int(sx),int(sy)
-        self.goal_location.x, self.goal_location.y = int(gx),int(gy)
+
+        start_x, start_y, start_theta = [0,0,90]
+        goal_x, goal_y, goal_theta = [0,0,0]
+        # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
+        # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
+        self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
+        self.goal_location.x, self.goal_location.y, self.start_location.theta = int(goal_x),int(goal_y), float(goal_theta)
 
         self.selectStart = True
         self.obstacles = self.createObstacles()
