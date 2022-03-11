@@ -5,14 +5,17 @@ import heapq
 from queue import PriorityQueue
 import math
 import time
+import numpy as np
+import math
 
 class AStar:
 
     def __init__(self):
-
-        self.directions = [ [-1, -1],[-1, 0], [-1, 1],
-                            [0, -1], [0, 0], [0, 1],
-                            [1, -1], [1, 0], [1, 1]] 
+        self.stepsize = 1 
+        self.angles = np.linspace(0, 360, 360//30)
+        self.directions  = np.array([np.cos(self.angles)*self.stepsize, np.sin(self.angles)*self.stepsize]) 
+        self.stepsize = int(input("Input step size(0 <= L <= 10): "))
+        print(self.directions)
         self.recently_closed=[]
 
     def search(self, arena):
@@ -29,17 +32,23 @@ class AStar:
             for direction in self.directions:
                 x_ = current_node.x + direction[0]
                 y_ = current_node.y + direction[1]
-                node = Arena.Node(x_, y_)
+                theta_ = current_node.theta + direction[2]
+                node = Arena.Node(x_, y_,theta_)
+
+                # Check of the node is created inside the arena
+                if(not arena.isValid(node)):
+                    continue
+
+                # Check if the newly created node lies inside any obstacles
                 if (arena.isCollision(x_,y_)):
                     obstacle_node = arena.obstacle_nodes.get((node.x,node.y))
                     if not obstacle_node:
                         arena.obstacle_nodes[(x_, y_)] = node
                     continue
 
-                if(not arena.isValid(node)):
-                    continue
                 
-                # Skip evaluating open nodes:
+                # Skip evaluating "cost to come" of the newly created node if 
+                # any open nodes are already present in the opennode list :
                 open_node_visited = arena.open_nodes.get((node.x,node.y))
                 if open_node_visited:
                     # Skip evaluating open nodes' parents:
@@ -48,19 +57,23 @@ class AStar:
                         continue
                     continue
 
-                # Skip evaluating visited nodes:
+                # Skip evaluating "cost to come" if new node's location 
+                # is already a visited nodes:
                 node_visited = arena.nodes.get((node.x,node.y))
-                # print(node_visited,node.x,node.y)
                 if node_visited:
                     continue
                 
+                # Evaluate "cost to come"
                 costToCome = current_node.costToCome + math.sqrt(math.pow(x_-current_node.x,2)+math.pow(y_-current_node.y,2))
                 if node.costToCome > costToCome:
                     node.parent=current_node
                     node.costToCome=costToCome
                 arena.open_nodes[(node.x,node.y)]=node
             arena.nodes[(current_node.x, current_node.y)] = current_node
+
+            # Delete the node from open list, as it has been visited now:
             del arena.open_nodes[(current_node.x, current_node.y)]
+
         return solution_found, arena
 
 if __name__ == "__main__":
@@ -71,7 +84,7 @@ if __name__ == "__main__":
     # Paint the obstacles node white
     for i in range(arena.WIDTH):
         for j in range(arena.HEIGHT):
-            node = Arena.Node(i, j)
+            node = Arena.Node(i, j,0)
             if (arena.isCollision(i,j)):
                 obstacle_node = arena.obstacle_nodes.get((node.x,node.y))
                 if not obstacle_node:
