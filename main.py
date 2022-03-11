@@ -12,9 +12,11 @@ class AStar:
 
     def __init__(self):
         self.stepsize = 1 
-        self.angles = np.linspace(0, 360, 360//30)
-        self.directions  = np.array([np.cos(self.angles)*self.stepsize, np.sin(self.angles)*self.stepsize]) 
-        self.stepsize = int(input("Input step size(0 <= L <= 10): "))
+        self.angles = [0, math.pi/6, 2*math.pi/6]
+        # self.angles = np.linspace(0, 360, 360//30)
+        print("Angles: ",self.angles)
+        self.directions  = np.column_stack( (np.cos(self.angles)*self.stepsize, np.sin(self.angles)*self.stepsize, self.angles) ) 
+        # self.stepsize = int(input("Input step size(0 <= L <= 10): "))
         print(self.directions)
         self.recently_closed=[]
 
@@ -24,12 +26,16 @@ class AStar:
         
         #Loop through all the open nodes
         for _,current_node in open_nodes.items():
-            if current_node== arena.goal_location:
+            if current_node == arena.goal_location:
                 arena.goal_location=current_node
                 solution_found = True
 
+            theta_indx = np.argmin(abs(self.directions-current_node.theta))
+            directions_centered = np.roll(self.directions, -2*theta_indx)
+            directions = directions_centered[:4]
+            # directions = self.directions
             # Loop through all the possible actions
-            for direction in self.directions:
+            for direction in directions:
                 x_ = current_node.x + direction[0]
                 y_ = current_node.y + direction[1]
                 theta_ = current_node.theta + direction[2]
@@ -102,5 +108,5 @@ if __name__ == "__main__":
         # Update MAP - Pygame display
         arena.drawAll()
     arena.drawAll()
-    input()
+    input("Finished algorithm")
     # arena.displayResults()

@@ -27,8 +27,8 @@ class Arena:
             self.parent = parent 
             self.x_thresh= 0.5
             self.y_thresh = 0.5
-            self.theta_threshold = 30
-            
+            self.theta_threshold = 1000
+
         def __lt__(self, other):
             return self.costToCome < other.costToCome
         
@@ -61,8 +61,8 @@ class Arena:
         self.goal_location = self.Node(self.WIDTH-5,self.HEIGHT-5,0)
         # self.goal_location = self.Node(150,190)
 
-        start_x, start_y, start_theta = [0,0,90]
-        goal_x, goal_y, goal_theta = [0,0,0]
+        start_x, start_y, start_theta = [0,0,0]
+        goal_x, goal_y, goal_theta = [30,10,0]
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
