@@ -25,13 +25,18 @@ class Arena:
             self.theta= theta
             self.costToCome = float('inf')
             self.parent = parent 
+            self.x_thresh= 0.5
+            self.y_thresh = 0.5
+            self.theta_threshold = 30
+            
         def __lt__(self, other):
             return self.costToCome < other.costToCome
         
         def __eq__(self, other):
             if other==None:
                     return False
-            return self.x == other.x and self.y == other.y
+            return abs(self.x - other.x)<self.x_thresh and \
+                abs(self.y - other.y)<self.y_thresh and abs(self.theta-other.theta)<self.theta_threshold
      
     def __init__(self):
         pygame.init()
