@@ -34,47 +34,59 @@ class AStar:
             directions_centered = np.roll(self.directions, -2*theta_indx)
             directions = directions_centered[:4]
             # directions = self.directions
+
+            x_candidate, y_candidate, theta_candidate, nearest_distance = None, None, None, float('inf')
+
             # Loop through all the possible actions
             for direction in directions:
                 x_ = current_node.x + direction[0]
                 y_ = current_node.y + direction[1]
                 theta_ = current_node.theta + direction[2]
-                node = Arena.Node(x_, y_,theta_)
 
-                # Check of the node is created inside the arena
-                if(not arena.isValid(node)):
-                    continue
+                #Heuristic 
+                d = math.sqrt(math.pow(x_-arena.goal_location.x,2)+math.pow(y_-arena.goal_location.y,2))
+                if  d<nearest_distance:
+                    nearest_distance = d
+                    x_candidate, y_candidate, theta_candidate = x_, y_, theta_
 
-                # Check if the newly created node lies inside any obstacles
-                if (arena.isCollision(x_,y_)):
-                    obstacle_node = arena.obstacle_nodes.get((node.x,node.y))
-                    if not obstacle_node:
-                        arena.obstacle_nodes[(x_, y_)] = node
-                    continue
+            # Run action which gives the nerest distance: 
+            node = Arena.Node(x_candidate, y_candidate, theta_candidate)
 
-                
-                # Skip evaluating "cost to come" of the newly created node if 
-                # any open nodes are already present in the opennode list :
-                open_node_visited = arena.open_nodes.get((node.x,node.y))
-                if open_node_visited:
-                    # Skip evaluating open nodes' parents:
-                    open_node_parent_visited = arena.open_nodes.get((open_node_visited.parent.x,open_node_visited.parent.y))
-                    if open_node_parent_visited:
-                        continue
-                    continue
+            # Check of the node is created inside the arena
+            if(not arena.isValid(node)):
+                continue
 
-                # Skip evaluating "cost to come" if new node's location 
-                # is already a visited nodes:
-                node_visited = arena.nodes.get((node.x,node.y))
-                if node_visited:
+            # Check if the newly created node lies inside any obstacles
+            if (arena.isCollision(x_,y_)):
+                obstacle_node = arena.obstacle_nodes.get((node.x,node.y))
+                if not obstacle_node:
+                    arena.obstacle_nodes[(x_, y_)] = node
+                continue
+
+            
+            # Skip evaluating "cost to come" of the newly created node if 
+            # any open nodes are already present in the opennode list :
+            open_node_visited = arena.open_nodes.get((node.x,node.y))
+            if open_node_visited:
+                # Skip evaluating open nodes' parents:
+                open_node_parent_visited = arena.open_nodes.get((open_node_visited.parent.x,open_node_visited.parent.y))
+                if open_node_parent_visited:
                     continue
-                
-                # Evaluate "cost to come"
-                costToCome = current_node.costToCome + math.sqrt(math.pow(x_-current_node.x,2)+math.pow(y_-current_node.y,2))
-                if node.costToCome > costToCome:
-                    node.parent=current_node
-                    node.costToCome=costToCome
-                arena.open_nodes[(node.x,node.y)]=node
+                continue
+
+            # Skip evaluating "cost to come" if new node's location 
+            # is already a visited nodes:
+            node_visited = arena.nodes.get((node.x,node.y))
+            if node_visited:
+                continue
+            
+            # Evaluate "cost to come"
+            costToCome = current_node.costToCome + math.sqrt(math.pow(x_-current_node.x,2)+math.pow(y_-current_node.y,2))
+            if node.costToCome > costToCome:
+                node.parent=current_node
+                node.costToCome=costToCome
+            arena.open_nodes[(node.x,node.y)]=node
+
             arena.nodes[(current_node.x, current_node.y)] = current_node
 
             # Delete the node from open list, as it has been visited now:
