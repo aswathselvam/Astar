@@ -82,6 +82,7 @@ class Arena:
         self.start_time = time.time()
         self.front = [ (0.0001+self.distance(self.start_location,self.goal_location), 0.00001, self.start_location, self.start_location) ]
         self.cameFrom = {}
+        self.latestnodepop=[]
 
     def distance(self, start, goal):
         return math.sqrt(math.pow(start.x-goal.x,2)+math.pow(start.y-goal.y,2))    
@@ -156,6 +157,13 @@ class Arena:
             pygame.draw.rect(self.background, color, (data[2].x, data[2].y, 1, 1))
             pygame.draw.line(self.background, color, (data[3].x, data[3].y), (data[2].x, data[2].y), width=1)
             pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=0)
+
+        for latestnodepop in self.latestnodepop:
+            color = GREEN_LIGHT
+            pygame.draw.line(self.background, color, (latestnodepop[3].x, latestnodepop[3].y), (latestnodepop[2].x, latestnodepop[2].y), width=1)
+            # pygame.draw.line(self.background, YELLOW, (self.latestnodepop[2].x, self.latestnodepop[2].y), (0, 0), width=1)
+            # pygame.draw.line(self.background, color, (0, 0), (self.latestnodepop[3].x, self.latestnodepop[3].y), width=1)
+            pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=1)
 
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
         pygame.display.update()

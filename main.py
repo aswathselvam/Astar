@@ -36,7 +36,7 @@ class AStar:
         #Loop through all the open nodes
         if arena.front:
             min_cost_node = heappop(arena.front)
-
+            arena.latestnodepop.append(min_cost_node)
             
             total_cost, cost, current_node, previous = min_cost_node
             if arena.nodes.get((current_node.x,current_node.y, current_node.theta)):
