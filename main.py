@@ -14,7 +14,7 @@ import math
 class AStar:
 
     def __init__(self):
-        self.stepsize = 30
+        self.stepsize = 25
         # self.angles = np.array([0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6])
         self.angles = np.linspace(0, 2*math.pi, 12)
         print("Angles: ",self.angles)
@@ -46,7 +46,7 @@ class AStar:
             # arena.cameFrom[(current_node.x,current_node.y)] = previous
 
             if current_node == arena.goal_location:
-                # arena.goal_location=current_node
+                arena.goal_node = current_node
                 solution_found = True
             
             #TODO: ROBOT can only turn 4 angles from it's current heading
@@ -83,10 +83,6 @@ class AStar:
                 deltacost = self.distance(current_node, node)
                 heappush(arena.front, (deltacost+self.distance(node, arena.goal_location), cost+deltacost, node, current_node))
             
-            if arena.goal_location == current_node: 
-                arena.goal_node = current_node
-                solution_found=true
-            
         return solution_found, arena
 
 if __name__ == "__main__":
@@ -114,7 +110,7 @@ if __name__ == "__main__":
 
         # Update MAP - Pygame display
         arena.drawAll()
-
+        
     arena.drawAll()
     input("Finished algorithm")
     arena.displayResults()

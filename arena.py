@@ -69,7 +69,7 @@ class Arena:
         # self.goal_location = self.Node(150,190)
 
         start_x, start_y, start_theta = [0,0,math.pi/7]
-        goal_x, goal_y, goal_theta = [200,190,math.pi/4]
+        goal_x, goal_y, goal_theta = [200,190,0]
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
@@ -154,15 +154,12 @@ class Arena:
 
         for data in self.front:
             color = YELLOW
-            pygame.draw.rect(self.background, color, (data[2].x, data[2].y, 1, 1))
             pygame.draw.line(self.background, color, (data[3].x, data[3].y), (data[2].x, data[2].y), width=1)
-            pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=0)
+            pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=1)
 
         for latestnodepop in self.latestnodepop:
             color = GREEN_LIGHT
             pygame.draw.line(self.background, color, (latestnodepop[3].x, latestnodepop[3].y), (latestnodepop[2].x, latestnodepop[2].y), width=1)
-            # pygame.draw.line(self.background, YELLOW, (self.latestnodepop[2].x, self.latestnodepop[2].y), (0, 0), width=1)
-            # pygame.draw.line(self.background, color, (0, 0), (self.latestnodepop[3].x, self.latestnodepop[3].y), width=1)
             pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=1)
 
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
@@ -200,9 +197,11 @@ class Arena:
         pygame.display.update()
 
     def drawPath(self):
-        currentNode = self.goal_location
+        if not self.goal_node:
+            return
+        currentNode = self.goal_node
         while(currentNode.parent):
-            pygame.draw.rect(self.background, (0,255,0), (currentNode.x, currentNode.y, 1, 1))
+            pygame.draw.rect(self.background, PURPLE, (currentNode.x, currentNode.y, 5, 5))
             currentNode=currentNode.parent
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
         pygame.display.update()
