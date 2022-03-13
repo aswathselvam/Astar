@@ -1,3 +1,4 @@
+from matplotlib.pyplot import draw
 import pygame
 import sys
 import time 
@@ -5,7 +6,9 @@ import numpy as np
 from utils import *
 import math
 
-
+GREEN_LIGHT = (76, 255, 130)
+RED_LIGHT = (240, 101, 101)
+PURPLE = (126, 67, 222)
 ORANGE = (130,110,70)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
@@ -26,11 +29,11 @@ class Arena:
             self.theta= theta
             self.costToCome = float('inf')
             self.parent = parent 
-            self.x_thresh= 0.5
-            self.y_thresh = 0.5
+            self.x_thresh= 5
+            self.y_thresh = 5
 
             #TODO: Implement final angle checking condition
-            self.theta_threshold = 1000
+            self.theta_threshold = math.pi/10
 
         def __lt__(self, other):
             return self.costToCome < other.costToCome
@@ -39,7 +42,7 @@ class Arena:
             if other==None:
                     return False
             return abs(self.x - other.x)<self.x_thresh and \
-                abs(self.y - other.y)<self.y_thresh# and abs(self.theta-other.theta)<self.theta_threshold
+                abs(self.y - other.y)<self.y_thresh and abs(self.theta-other.theta)<self.theta_threshold
      
     def __init__(self):
         pygame.init()
@@ -65,12 +68,12 @@ class Arena:
         # self.goal_location = self.Node(150,190)
 
         start_x, start_y, start_theta = [0,0,0]
-        goal_x, goal_y, goal_theta = [120,230,0]
+        goal_x, goal_y, goal_theta = [100,20,0]
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
         self.goal_location.x, self.goal_location.y, self.start_location.theta = int(goal_x),int(goal_y), float(goal_theta)
-
+        self.goal_node=None
         self.selectStart = True
         self.obstacles = self.createObstacles()
         deleteFolder('results')
@@ -130,6 +133,7 @@ class Arena:
         self.drawStartLocation()
         self.drawGoalLocation()
         self.drawPath()
+        self.drawHeading()
         self.save()
         # time.sleep(0.01)
 
@@ -154,6 +158,24 @@ class Arena:
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
         pygame.display.update()
         pass
+
+    def drawHeading(self):
+        r=40
+
+        nodes = [self.front[0][2],  self.start_location,  self.goal_location, ]
+        colors = [PURPLE, RED_LIGHT, GREEN_LIGHT]
+        for node, color in zip(nodes, colors):
+            pygame.draw.line(self.background, color, (node.x, node.y), (node.x+r*math.cos(node.theta), node.y+r*math.sin(node.theta)), width=1)
+            pygame.draw.circle(self.background, color, (node.x+r*math.cos(node.theta), node.y+r*math.sin(node.theta)), 5, width=1)
+ 
+
+        if self.goal_node:
+            node = self.goal_node
+            pygame.draw.line(self.background, ORANGE, (node.x, node.y), (node.x+3*math.cos(node.theta), node.y+3*math.sin(node.theta)), width=1)
+            pygame.draw.circle(self.background, ORANGE, (node.x+r*math.cos(node.theta), node.y+r*math.sin(node.theta)), 5, width=1)
+
+        self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
+        pygame.display.update()
 
     def drawStartLocation(self):
         #### Populate the surface with Start location ####

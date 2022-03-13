@@ -39,10 +39,10 @@ class AStar:
 
             
             total_cost, cost, current_node, previous = min_cost_node
-            if arena.nodes.get((current_node.x,current_node.y)):
+            if arena.nodes.get((current_node.x,current_node.y, current_node.theta)):
                 return solution_found, arena
             
-            arena.nodes[(current_node.x,current_node.y)]=current_node
+            arena.nodes[(current_node.x,current_node.y, current_node.theta)]=current_node
             # arena.cameFrom[(current_node.x,current_node.y)] = previous
 
             if current_node == arena.goal_location:
@@ -61,7 +61,7 @@ class AStar:
             for direction in directions:
                 x_ = int(current_node.x + direction[0])
                 y_ = int(current_node.y + direction[1])
-                theta_ = 0 #current_node.theta + direction[2]
+                theta_ = (current_node.theta + direction[2]) % 2*math.pi
 
                 # Run action which gives the nerest distance: 
                 node = Arena.Node(x_, y_, theta_)
@@ -72,13 +72,14 @@ class AStar:
                     continue
 
                 # Check if the newly created node lies inside any obstacles or already created nodes
-                if (arena.nodes.get((node.x,node.y)) or arena.obstacle_nodes.get((node.x,node.y))):
+                if (arena.nodes.get((node.x,node.y, node.theta)) or arena.obstacle_nodes.get((node.x,node.y))):
                     continue
 
                 deltacost = self.distance(current_node, node)
                 heappush(arena.front, (deltacost+self.distance(node, arena.goal_location), cost+deltacost, node, current_node))
             
             if arena.goal_location == current_node: 
+                arena.goal_node = current_node
                 solution_found=true
             
         return solution_found, arena
