@@ -1,3 +1,4 @@
+from heapq import heappop
 from matplotlib.pyplot import draw
 import pygame
 import sys
@@ -150,10 +151,11 @@ class Arena:
             color = WHITE
             pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
 
-        for node in self.front:
+        for data in self.front:
             color = YELLOW
-            pygame.draw.rect(self.background, color, (node[2].x, node[2].y, 1, 1))
-
+            pygame.draw.rect(self.background, color, (data[2].x, data[2].y, 1, 1))
+            pygame.draw.line(self.background, color, (data[3].x, data[3].y), (data[2].x, data[2].y), width=1)
+            pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=0)
 
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
         pygame.display.update()

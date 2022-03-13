@@ -14,9 +14,9 @@ import math
 class AStar:
 
     def __init__(self):
-        self.stepsize = 3
-        self.angles = np.array([0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6])
-        # self.angles = np.linspace(0, 360, 360//30)
+        self.stepsize = 30
+        # self.angles = np.array([0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6])
+        self.angles = np.linspace(0, 2*math.pi, 12)
         print("Angles: ",self.angles)
         self.directions  = np.column_stack( (np.cos(self.angles)*self.stepsize, np.sin(self.angles)*self.stepsize, self.angles) ) 
         # self.stepsize = int(input("Input step size(0 <= L <= 10): "))
@@ -50,9 +50,9 @@ class AStar:
                 solution_found = True
             
             #TODO: ROBOT can only turn 4 angles from it's current heading
-            theta_indx = np.argmin(abs(self.angles-current_node.theta))
-            directions_centered = np.roll(self.directions, -2*theta_indx)
-            directions = directions_centered[:4]
+            theta_indx = np.argmin(abs(self.angles-current_node.theta)% 2*math.pi)
+            directions_centered = np.roll(self.directions, 3-theta_indx)
+            directions = directions_centered[:6]
 
             #TODO: Implement above condition and remove this
             # directions = self.directions
@@ -61,7 +61,12 @@ class AStar:
             for direction in directions:
                 x_ = int(current_node.x + direction[0])
                 y_ = int(current_node.y + direction[1])
-                theta_ = (current_node.theta + direction[2]) % 2*math.pi
+                theta_ = (current_node.theta + direction[2])
+                
+                if theta_ > 0:
+                    theta_ = theta_ % 2*math.pi
+                elif theta_ < 0:
+                    theta_ = (theta_ + 2*math.pi) % 2*math.pi
 
                 # Run action which gives the nerest distance: 
                 node = Arena.Node(x_, y_, theta_)
@@ -109,6 +114,7 @@ if __name__ == "__main__":
 
         # Update MAP - Pygame display
         arena.drawAll()
+
     arena.drawAll()
     input("Finished algorithm")
     arena.displayResults()
