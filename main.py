@@ -14,8 +14,8 @@ import math
 class AStar:
 
     def __init__(self):
-        self.stepsize = 1
-        self.angles = [0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6]
+        self.stepsize = 3
+        self.angles = np.array([0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6])
         # self.angles = np.linspace(0, 360, 360//30)
         print("Angles: ",self.angles)
         self.directions  = np.column_stack( (np.cos(self.angles)*self.stepsize, np.sin(self.angles)*self.stepsize, self.angles) ) 
@@ -50,12 +50,12 @@ class AStar:
                 solution_found = True
             
             #TODO: ROBOT can only turn 4 angles from it's current heading
-            # theta_indx = np.argmin(abs(self.angles-current_node.theta))
-            # directions_centered = np.roll(self.directions, -2*theta_indx)
-            # directions = directions_centered[:4]
+            theta_indx = np.argmin(abs(self.angles-current_node.theta))
+            directions_centered = np.roll(self.directions, -2*theta_indx)
+            directions = directions_centered[:4]
 
             #TODO: Implement above condition and remove this
-            directions = self.directions
+            # directions = self.directions
 
             # Loop through all the possible actions
             for direction in directions:
