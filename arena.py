@@ -44,7 +44,7 @@ class Arena:
     def __init__(self):
         pygame.init()
         self.HEIGHT, self.WIDTH = 250, 400
-        pygame.display.set_caption("Dijkstra Algorithm - Path Planning on Point Robot")
+        pygame.display.set_caption("A Star Algorithm - Path Planning on Car like Robot model")
 
         #### Create a canvas on which to display everything ####
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
