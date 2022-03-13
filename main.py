@@ -111,4 +111,4 @@ if __name__ == "__main__":
         arena.drawAll()
     arena.drawAll()
     input("Finished algorithm")
-    # arena.displayResults()
+    arena.displayResults()
