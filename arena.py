@@ -65,7 +65,7 @@ class Arena:
         # self.goal_location = self.Node(150,190)
 
         start_x, start_y, start_theta = [0,0,0]
-        goal_x, goal_y, goal_theta = [230,230,0]
+        goal_x, goal_y, goal_theta = [100,230,0]
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)

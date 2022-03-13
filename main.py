@@ -14,7 +14,7 @@ import math
 class AStar:
 
     def __init__(self):
-        self.stepsize = 4
+        self.stepsize = 1
         self.angles = [0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6]
         # self.angles = np.linspace(0, 360, 360//30)
         print("Angles: ",self.angles)
