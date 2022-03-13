@@ -3,6 +3,7 @@ import sys
 import time 
 import numpy as np
 from utils import *
+import math
 
 
 ORANGE = (130,110,70)
@@ -27,6 +28,8 @@ class Arena:
             self.parent = parent 
             self.x_thresh= 0.5
             self.y_thresh = 0.5
+
+            #TODO: Implement final angle checking condition
             self.theta_threshold = 1000
 
         def __lt__(self, other):
@@ -36,7 +39,7 @@ class Arena:
             if other==None:
                     return False
             return abs(self.x - other.x)<self.x_thresh and \
-                abs(self.y - other.y)<self.y_thresh and abs(self.theta-other.theta)<self.theta_threshold
+                abs(self.y - other.y)<self.y_thresh# and abs(self.theta-other.theta)<self.theta_threshold
      
     def __init__(self):
         pygame.init()
@@ -62,7 +65,7 @@ class Arena:
         # self.goal_location = self.Node(150,190)
 
         start_x, start_y, start_theta = [0,0,0]
-        goal_x, goal_y, goal_theta = [30,10,0]
+        goal_x, goal_y, goal_theta = [230,230,0]
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
@@ -73,6 +76,12 @@ class Arena:
         deleteFolder('results')
         createFolder('results')
         self.start_time = time.time()
+        self.front = [ (0.0001+self.distance(self.start_location,self.goal_location), 0.00001, self.start_location, self.start_location) ]
+        self.cameFrom = {}
+
+    def distance(self, start, goal):
+        return math.sqrt(math.pow(start.x-goal.x,2)+math.pow(start.y-goal.y,2))    
+        # return (goal.x-start.x)+(goal.y-start.y)
 
     def updateEvents(self):
 
@@ -128,14 +137,19 @@ class Arena:
         for _,node in self.nodes.items():
             color = ORANGE
             pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
-        # print("OpenNodes: \n",self.open_nodes)
-        for _,node in self.open_nodes.items():
-            color = YELLOW
-            pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
+
+        # for _,node in self.open_nodes.items():
+        #     color = YELLOW
+        #     pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
 
         for _,node in self.obstacle_nodes.items():
             color = WHITE
             pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
+
+        for node in self.front:
+            color = YELLOW
+            pygame.draw.rect(self.background, color, (node[2].x, node[2].y, 1, 1))
+
 
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
         pygame.display.update()
