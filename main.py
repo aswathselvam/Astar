@@ -14,21 +14,22 @@ import math
 class AStar:
 
     def __init__(self):
-        self.stepsize = 25
-        # self.angles = np.array([0, math.pi/6, 2*math.pi/6, 3*math.pi/6, 4*math.pi/6, 5*math.pi/6, 6*math.pi/6])
-        self.angles = np.linspace(0, 2*math.pi, 12)
-        print("Angles: ",self.angles)
-        self.directions  = np.column_stack( (np.cos(self.angles)*self.stepsize, np.sin(self.angles)*self.stepsize, self.angles) ) 
-        # self.stepsize = int(input("Input step size(0 <= L <= 10): "))
-        # self.directions = [ [-1, -1],[-1, 0], [-1, 1],
-        #             [0, -1], [0, 0], [0, 1],
-        #             [1, -1], [1, 0], [1, 1]] 
-        print(self.directions)
+        self.stepsize = 15
+        self.angles = [-math.pi/3, math.pi/3, -math.pi/6, math.pi/6, 0]
         self.recently_closed=[]    
 
     def distance(self, start, goal):
         return math.sqrt(math.pow(start.x-goal.x,2)+math.pow(start.y-goal.y,2))    
         # return (goal.x-start.x)+(goal.y-start.y)
+
+    def cycleTheta(self,theta,delta_theta):
+        theta_ = theta + delta_theta
+        if theta_ > 0:
+            theta_ = theta_ % math.pi
+        elif theta_ < 0:
+            theta_ = theta_ + 2*math.pi
+
+        return theta_
 
     def search(self, arena):
         solution_found = False
@@ -43,30 +44,20 @@ class AStar:
                 return solution_found, arena
             
             arena.nodes[(current_node.x,current_node.y, current_node.theta)]=current_node
-            # arena.cameFrom[(current_node.x,current_node.y)] = previous
 
             if current_node == arena.goal_location:
                 arena.goal_node = current_node
                 solution_found = True
             
-            #TODO: ROBOT can only turn 4 angles from it's current heading
-            theta_indx = np.argmin(abs(self.angles-current_node.theta)% 2*math.pi)
-            directions_centered = np.roll(self.directions, 3-theta_indx)
-            directions = directions_centered[:6]
-
-            #TODO: Implement above condition and remove this
-            # directions = self.directions
+            angles=[]
+            for count, deltaTheta in enumerate(self.angles):
+                angles.append(self.cycleTheta(current_node.theta,deltaTheta))
 
             # Loop through all the possible actions
-            for direction in directions:
-                x_ = int(current_node.x + direction[0])
-                y_ = int(current_node.y + direction[1])
-                theta_ = (current_node.theta + direction[2])
-                
-                if theta_ > 0:
-                    theta_ = theta_ % 2*math.pi
-                elif theta_ < 0:
-                    theta_ = (theta_ + 2*math.pi) % 2*math.pi
+            for theta_ in angles:
+
+                x_ = int(current_node.x + self.stepsize*np.cos(theta_))
+                y_ = int(current_node.y + self.stepsize*np.sin(theta_))
 
                 # Run action which gives the nerest distance: 
                 node = Arena.Node(x_, y_, theta_)
@@ -110,7 +101,8 @@ if __name__ == "__main__":
 
         # Update MAP - Pygame display
         arena.drawAll()
-        
+        input()
+
     arena.drawAll()
     input("Finished algorithm")
     arena.displayResults()

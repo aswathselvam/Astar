@@ -34,7 +34,7 @@ class Arena:
             self.y_thresh = 5
 
             #TODO: Implement final angle checking condition
-            self.theta_threshold = math.pi/10
+            self.theta_threshold = math.pi/6
 
         def __lt__(self, other):
             return self.costToCome < other.costToCome
