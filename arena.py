@@ -19,6 +19,8 @@ CYAN = (136, 255, 196)
 BLACK = (0, 0, 0)
 CLEARNCE = 10
 
+START = [0,0,math.pi/7]
+GOAL = [200,190,0]
 class Arena:
     class Node:
         """
@@ -58,7 +60,7 @@ class Arena:
         # This 'background' surface will have the bottom left as origin.
         # All objects will be drawn in this 'bacground' surface.
         self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
-
+        #### setup variables ####
         self.nodes = {}
         self.start_location = self.Node(0,0,0) 
         self.start_location.costToCome=0
@@ -70,13 +72,15 @@ class Arena:
         self.goal_location = self.Node(self.WIDTH-5,self.HEIGHT-5,0)
         # self.goal_location = self.Node(150,190)
 
-        start_x, start_y, start_theta = [0,0,math.pi/7]
-        goal_x, goal_y, goal_theta = [200,190,0]
-        # Get details of start and goal node from user input:
+        # Manually assign start and goal locations.
+        start_x, start_y, start_theta = START
+        goal_x, goal_y, goal_theta = GOAL
+        # or Get details of start and goal node from user input:
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
         self.goal_location.x, self.goal_location.y, self.goal_location.theta = int(goal_x),int(goal_y), float(goal_theta)
+
         self.goal_node=None
         self.selectStart = True
         self.obstacles = self.createObstacles()
@@ -84,11 +88,15 @@ class Arena:
         deleteFolder('results')
         createFolder('results')
         self.start_time = time.time()
+        # front = [ total_cost, cost, current_node, previous node ]
         self.front = [ (0.0001+self.distance(self.start_location,self.goal_location), 0.00001, self.start_location, self.start_location) ]
         self.cameFrom = {}
         self.latestnodepop=[]
 
     def distance(self, start, goal):
+        """
+        Returns Euclidean Distance between start and goal.
+        """
         return math.sqrt(math.pow(start.x-goal.x,2)+math.pow(start.y-goal.y,2))    
         # return (goal.x-start.x)+(goal.y-start.y)
 
@@ -224,7 +232,7 @@ class Arena:
         input("Press Enter Exit")
 
     def save(self):
-        file_name = "./results/image" + str(time.time_ns()) +".png"
+        file_name = "./results/image" + str(time.time()) +".png"
         pygame.image.save(self.screen, file_name)
             
 
