@@ -17,6 +17,7 @@ GRAY = (220, 220, 220)
 BLUE = (0, 20, 108)
 CYAN = (136, 255, 196)
 BLACK = (0, 0, 0)
+CLEARNCE = 10
 
 class Arena:
     class Node:
@@ -65,11 +66,13 @@ class Arena:
         self.open_nodes={}
         self.open_nodes[(self.start_location.x,self.start_location.y)]=self.start_location
         self.obstacle_nodes = {}
+        self.obstacle_nodes_clearance = {}
         self.goal_location = self.Node(self.WIDTH-5,self.HEIGHT-5,0)
         # self.goal_location = self.Node(150,190)
 
         start_x, start_y, start_theta = [0,0,math.pi/7]
         goal_x, goal_y, goal_theta = [200,190,0]
+        # Get details of start and goal node from user input:
         # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
         # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
@@ -77,6 +80,7 @@ class Arena:
         self.goal_node=None
         self.selectStart = True
         self.obstacles = self.createObstacles()
+        self.obstacles_clearance = {}
         deleteFolder('results')
         createFolder('results')
         self.start_time = time.time()
@@ -151,6 +155,11 @@ class Arena:
         for _,node in self.obstacle_nodes.items():
             color = WHITE
             pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
+        
+        for _,node in self.obstacles_clearance.items():
+            color = YELLOW
+            pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
+
 
         for data in self.front:
             color = YELLOW
@@ -246,13 +255,14 @@ class Arena:
             self.m61 = (self.p6[1]-self.p1[1])/(self.p6[0]-self.p1[0])
             self.b61 = -self.m61*self.p1[0] + self.p1[1]
 
-        def isInside(self, x,y):        
-            side1 = (y-self.m12*x - self.b12 ) < 0
-            side2 = x - self.b23 > 0  
-            side3 = (y-self.m34*x - self.b34 ) > 0
-            side4 = (y-self.m45*x - self.b45 ) > 0
-            side5 = x - self.b56 < 0
-            side6 = (y-self.m61*x - self.b61 ) <0
+        def isInside(self, x,y, clearance=True):     
+            clearance_val = CLEARNCE if clearance else 0   
+            side1 = (y-self.m12*x - self.b12 ) < 0 + clearance_val
+            side2 = x - self.b23 > 0 - clearance_val
+            side3 = (y-self.m34*x - self.b34 ) > 0 - clearance_val
+            side4 = (y-self.m45*x - self.b45 ) > 0 - clearance_val
+            side5 = x - self.b56 < 0 + clearance_val
+            side6 = (y-self.m61*x - self.b61 ) < 0 + clearance_val
             return  side1 and side2 and side3 and side4 and side5 and side6 
 
     class Circle:
@@ -262,8 +272,9 @@ class Arena:
             self.radius = radius
             print(f"Circle at {x, y} with radius {radius}")
 
-        def isInside(self, x,y):
-            return  (x - self.x) **2 + (y- self.y)**2 - self.radius**2 < 0 
+        def isInside(self, x,y, clearance=True):     
+            clearance_val = CLEARNCE if clearance else 0   
+            return  (x - self.x) **2 + (y- self.y)**2  < (self.radius+clearance_val)**2
 
     class Polygon:
         def __init__(self, *args):
@@ -273,14 +284,15 @@ class Arena:
             self.m12, self.m23, self.m34, self.m41 = -1.24, -3.2, 0.85, 0.32
             self.b12, self.b23, self.b34, self.b41 =  230,439, 112, 173
 
-        def isInside(self, x,y):
-            f1 = (y - self.m12* x - self.b12) > 0   
-            f2 = (y - self.m23* x - self.b23) < 0 
-            fmidleft = (y - (-0.1)* x - 189) < 0
+        def isInside(self, x,y, clearance=True):     
+            clearance_val = CLEARNCE if clearance else 0   
+            f1 = (y - self.m12* x - self.b12) > 0 - clearance_val
+            f2 = (y - self.m23* x - self.b23) < 0 + 3*clearance_val  
+            fmidleft = (y - (-0.1)* x - 189) < 0# + clearance_val 
 
-            fmidright = (y - (-0.1)* x - 189) >= 0
-            f3 = (y - self.m34* x - self.b34) > 0  
-            f4 = (y - self.m41* x - self.b41) < 0 
+            fmidright = (y - (-0.1)* x - 189) > 0# - clearance_val
+            f3 = (y - self.m34* x - self.b34) > 0 - clearance_val
+            f4 = (y - self.m41* x - self.b41) < 0 + clearance_val -5
 
             return f1 and f2 and fmidleft or fmidright and f4 and f3
 
@@ -295,10 +307,9 @@ class Arena:
         obstacleList.extend([circObstacle,hexObstacle,polygObstacle])
         return obstacleList
     
-    def isCollision(self, x,y):
+    def isCollision(self, x, y, clearance=True):
         states = []
         for obstacle in self.obstacles:
-            states.append(obstacle.isInside(x, y)) 
+            states.append(obstacle.isInside(x, y, clearance)) 
         return any(states)
-    
 

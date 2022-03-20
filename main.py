@@ -59,7 +59,7 @@ class AStar:
                 x_ = int(current_node.x + self.stepsize*np.cos(theta_))
                 y_ = int(current_node.y + self.stepsize*np.sin(theta_))
 
-                # Run action which gives the nerest distance: 
+                # Create a new node
                 node = Arena.Node(x_, y_, theta_)
                 node.parent=current_node
 
@@ -68,7 +68,7 @@ class AStar:
                     continue
 
                 # Check if the newly created node lies inside any obstacles or already created nodes
-                if (arena.nodes.get((node.x,node.y, node.theta)) or arena.obstacle_nodes.get((node.x,node.y))):
+                if (arena.nodes.get((node.x,node.y, node.theta)) or arena.obstacle_nodes.get((node.x,node.y)) or arena.obstacles_clearance.get((node.x,node.y))):
                     continue
 
                 deltacost = self.distance(current_node, node)
@@ -85,11 +85,12 @@ if __name__ == "__main__":
     for i in range(arena.WIDTH):
         for j in range(arena.HEIGHT):
             node = Arena.Node(i, j,0)
-            if (arena.isCollision(i,j)):
-                obstacle_node = arena.obstacle_nodes.get((node.x,node.y))
-                if not obstacle_node:
+            if (arena.isCollision(i,j,clearance=False)):
                     arena.obstacle_nodes[(i, j)] = node
-                continue
+                    continue
+
+            if (arena.isCollision(i,j,clearance=True)):
+                arena.obstacles_clearance[(i, j)] = node
     
     arena.start_time = time.time()
     while(not solution_found): # your main loop
@@ -101,7 +102,6 @@ if __name__ == "__main__":
 
         # Update MAP - Pygame display
         arena.drawAll()
-        input()
 
     arena.drawAll()
     input("Finished algorithm")
