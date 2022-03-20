@@ -1,7 +1,12 @@
 # Project 3
-- Name: Aswath Muthuselvam, Gokul Hari
+Name: Aswath Muthuselvam
 - UID: 118286204
 - Section: 0201
+
+Name: Gokul Hari
+- UID: 117430646
+- Section: 0301
+
 - Course: ENPM 661 - Planning for Autonomous Robots
 
 ## A-Star Algorithm for Path Planning
