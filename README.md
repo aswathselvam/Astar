@@ -7,7 +7,7 @@ Name: Gokul Hari
 - UID: 117430646
 - Section: 0301
 
-- Course: ENPM 661 - Planning for Autonomous Robots
+Course: ENPM 661 - Planning for Autonomous Robots
 
 ## A-Star Algorithm for Path Planning
 ### Run Algorithm:
