@@ -1,11 +1,11 @@
-from turtle import distance
+# from turtle import distance
 import pygame
 import sys
 
-from sqlalchemy import true
+# from sqlalchemy import true
 from arena import Arena
 from heapq import heappush, heappop
-from queue import PriorityQueue
+# from queue import PriorityQueue
 import math
 import time
 import numpy as np
@@ -36,30 +36,33 @@ class AStar:
 
         #Loop through all the open nodes
         if arena.front:
+            # pick mincost node from heap
             min_cost_node = heappop(arena.front)
-            arena.latestnodepop.append(min_cost_node)
-            
             total_cost, cost, current_node, previous = min_cost_node
+            
+            # update the latest cache in Arena.
+            arena.latestnodepop.append(min_cost_node)            
+
             if arena.nodes.get((current_node.x,current_node.y, current_node.theta)):
                 return solution_found, arena
             
+            # mark node visited in hashmap
             arena.nodes[(current_node.x,current_node.y, current_node.theta)]=current_node
 
             if current_node == arena.goal_location:
                 arena.goal_node = current_node
                 solution_found = True
             
+            # Loop through all the possible actions            
+                        
             angles=[]
             for count, deltaTheta in enumerate(self.angles):
                 angles.append(self.cycleTheta(current_node.theta,deltaTheta))
-
-            # Loop through all the possible actions
             for theta_ in angles:
 
+                # Create a new neighbor node.
                 x_ = int(current_node.x + self.stepsize*np.cos(theta_))
                 y_ = int(current_node.y + self.stepsize*np.sin(theta_))
-
-                # Create a new node
                 node = Arena.Node(x_, y_, theta_)
                 node.parent=current_node
 
@@ -68,17 +71,20 @@ class AStar:
                     continue
 
                 # Check if the newly created node lies inside any obstacles or already created nodes
-                if (arena.nodes.get((node.x,node.y, node.theta)) or arena.obstacle_nodes.get((node.x,node.y)) or arena.obstacles_clearance.get((node.x,node.y))):
+                if (arena.nodes.get((node.x,node.y, node.theta)) or \
+                        arena.obstacle_nodes.get((node.x,node.y)) or \
+                        arena.obstacles_clearance.get((node.x,node.y))):
                     continue
-
-                deltacost = self.distance(current_node, node)
-                heappush(arena.front, (deltacost+self.distance(node, arena.goal_location), cost+deltacost, node, current_node))
+                startcost = self.distance(arena.start_location, current_node)
+                deltacost = self.distance(current_node, node) # distance between current node and new neighbor
+                goalcost = self.distance(node, arena.goal_location)
+                heappush(arena.front, (startcost+deltacost+goalcost, startcost+deltacost, node, current_node))
             
         return solution_found, arena
 
 if __name__ == "__main__":
     arena = Arena()
-    dijkstra = AStar()
+    planner = AStar()
     solution_found = False
     
     # Paint the obstacles node white
@@ -97,8 +103,8 @@ if __name__ == "__main__":
         # get all events
         arena.updateEvents()
         
-        #Search Dijsktra
-        solution_found, arena = dijkstra.search(arena)
+        #Search A star
+        solution_found, arena = planner.search(arena)
 
         # Update MAP - Pygame display
         arena.drawAll()
