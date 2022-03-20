@@ -187,7 +187,7 @@ class Arena:
 
         if self.goal_node:
             node = self.goal_node
-            pygame.draw.line(self.background, ORANGE, (node.x, node.y), (node.x+3*math.cos(node.theta), node.y+3*math.sin(node.theta)), width=1)
+            pygame.draw.line(self.background, ORANGE, (node.x, node.y), (node.x+r*math.cos(node.theta), node.y+r*math.sin(node.theta)), width=1)
             pygame.draw.circle(self.background, ORANGE, (node.x+r*math.cos(node.theta), node.y+r*math.sin(node.theta)), 5, width=1)
 
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
