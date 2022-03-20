@@ -13,6 +13,7 @@ PURPLE = (126, 67, 222)
 ORANGE = (130,110,70)
 YELLOW = (255, 255, 0)
 WHITE = (255, 255, 255)
+RED = (255,20,20)
 GRAY = (220, 220, 220)
 BLUE = (0, 20, 108)
 CYAN = (136, 255, 196)
@@ -20,7 +21,7 @@ BLACK = (0, 0, 0)
 CLEARNCE = 10
 
 START = [0,0,math.pi/7]
-GOAL = [200,190,0]
+GOAL = [280,70,0]
 class Arena:
     class Node:
         """

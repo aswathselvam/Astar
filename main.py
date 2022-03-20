@@ -17,6 +17,7 @@ class AStar:
         self.stepsize = 15
         self.angles = [-math.pi/3, math.pi/3, -math.pi/6, math.pi/6, 0]
         self.recently_closed=[]    
+        self.SCALE = 1/0.5
 
     def distance(self, start, goal):
         return math.sqrt(math.pow(start.x-goal.x,2)+math.pow(start.y-goal.y,2))    
@@ -30,6 +31,9 @@ class AStar:
             theta_ = theta_ + 2*math.pi
 
         return theta_
+
+    def roundtoscale(self, number):
+        return round(number * self.SCALE) / self.SCALE
 
     def search(self, arena):
         solution_found = False
@@ -61,8 +65,8 @@ class AStar:
             for theta_ in angles:
 
                 # Create a new neighbor node.
-                x_ = int(current_node.x + self.stepsize*np.cos(theta_))
-                y_ = int(current_node.y + self.stepsize*np.sin(theta_))
+                x_ = self.roundtoscale(current_node.x + self.stepsize*np.cos(theta_))
+                y_ = self.roundtoscale(current_node.y + self.stepsize*np.sin(theta_))
                 node = Arena.Node(x_, y_, theta_)
                 node.parent=current_node
 
@@ -72,9 +76,9 @@ class AStar:
 
                 # Check if the newly created node lies inside any obstacles or already created nodes
                 if (arena.nodes.get((node.x,node.y, node.theta)) or \
-                        arena.obstacle_nodes.get((node.x,node.y)) or \
-                        arena.obstacles_clearance.get((node.x,node.y))):
+                        arena.isCollision(node.x,node.y,clearance=True)):
                     continue
+
                 startcost = self.distance(arena.start_location, current_node)
                 deltacost = self.distance(current_node, node) # distance between current node and new neighbor
                 goalcost = self.distance(node, arena.goal_location)
