@@ -25,7 +25,7 @@ class AStar:
 
     def cycleTheta(self,theta,delta_theta):
         theta_ = theta + delta_theta
-        if theta_ > 0:
+        if theta_ >= 2*math.pi:
             theta_ = theta_ % math.pi
         elif theta_ < 0:
             theta_ = theta_ + 2*math.pi

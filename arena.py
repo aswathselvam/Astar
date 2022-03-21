@@ -79,8 +79,8 @@ class Arena:
         start_x, start_y, start_theta = START
         goal_x, goal_y, goal_theta = GOAL
         # or Get details of start and goal node from user input:
-        # start_x, start_y, start_theta = input("Enter start node information( ex: [x,y,theta] ): ")
-        # goal_x, goal_y, goal_theta = input("Enter goal node information( ex: [x,y,theta] ): ")
+        # start_x, start_y, start_theta = input("Enter start node information[x,y,theta(randians)] seperated by space( ex: 0 0 0 ): ").split()
+        # goal_x, goal_y, goal_theta = input("Enter goal node information[x,y,theta(radians)] seperated by space( ex: 280 70 0  ): ").split()
         self.start_location.x, self.start_location.y,self.start_location.theta  = int(start_x),int(start_y), float(start_theta)
         self.goal_location.x, self.goal_location.y, self.goal_location.theta = int(goal_x),int(goal_y), float(goal_theta)
 
