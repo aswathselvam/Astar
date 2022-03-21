@@ -63,6 +63,8 @@ class Arena:
         self.background = pygame.Surface((self.WIDTH, self.HEIGHT))
         #### setup variables ####
         self.nodes = {}
+        self.SCALE = 2
+        self.visited=np.zeros([self.WIDTH*self.SCALE, self.HEIGHT*self.SCALE, 12])
         self.start_location = self.Node(0,0,0) 
         self.start_location.costToCome=0
         self.start_location.parent= self.Node(0,0,0)
@@ -153,9 +155,13 @@ class Arena:
         # time.sleep(0.01)
 
     def drawNode(self):
-        for _,node in self.nodes.items():
-            color = ORANGE
-            pygame.draw.rect(self.background, color, (node.x, node.y, 1, 1))
+
+        # visited = np.array(np.squeeze(np.where(self.visited==1)))
+        # for v in visited.T:
+        #     color = RED_LIGHT
+        #     if np.array(v).shape:
+        #         pygame.draw.rect(self.background, color, (v[0]//self.SCALE, v[1]//self.SCALE, 3, 3))
+
 
         # for _,node in self.open_nodes.items():
         #     color = YELLOW
@@ -178,7 +184,7 @@ class Arena:
         for latestnodepop in self.latestnodepop:
             color = GREEN_LIGHT
             pygame.draw.line(self.background, color, (latestnodepop[3].x, latestnodepop[3].y), (latestnodepop[2].x, latestnodepop[2].y), width=1)
-            pygame.draw.circle(self.background, color, (data[2].x, data[2].y), 3, width=1)
+            pygame.draw.circle(self.background, color, (latestnodepop[2].x, latestnodepop[2].y), 3, width=1)
 
         self.screen.blit(pygame.transform.flip(self.background, False, True), dest=(0, 0))
         pygame.display.update()

@@ -13,11 +13,11 @@ import math
 
 class AStar:
 
-    def __init__(self):
+    def __init__(self,arena):
         self.stepsize = 15
         self.angles = [-math.pi/3, math.pi/3, -math.pi/6, math.pi/6, 0]
         self.recently_closed=[]    
-        self.SCALE = 1/0.5
+        self.SCALE = arena.SCALE
 
     def distance(self, start, goal):
         return math.sqrt(math.pow(start.x-goal.x,2)+math.pow(start.y-goal.y,2))    
@@ -45,13 +45,11 @@ class AStar:
             total_cost, cost, current_node, previous = min_cost_node
             
             # update the latest cache in Arena.
-            arena.latestnodepop.append(min_cost_node)            
-
-            if arena.nodes.get((current_node.x,current_node.y, current_node.theta)):
-                return solution_found, arena
+            arena.latestnodepop.append(min_cost_node)    
             
-            # mark node visited in hashmap
-            arena.nodes[(current_node.x,current_node.y, current_node.theta)]=current_node
+            # mark node visited in matrix
+            current_node.theta = self.cycleTheta(current_node.theta,0)
+            arena.visited[int(current_node.x*self.SCALE)][int(current_node.y*self.SCALE)][int(((current_node.theta/(2*math.pi))*360)//30)] = 1
 
             if current_node == arena.goal_location:
                 arena.goal_node = current_node
@@ -75,7 +73,7 @@ class AStar:
                     continue
 
                 # Check if the newly created node lies inside any obstacles or already created nodes
-                if (arena.nodes.get((node.x,node.y, node.theta)) or \
+                if (arena.visited[int(node.x*self.SCALE)][int(node.y*self.SCALE)][int(((node.theta/(2*math.pi))*360)//30)] or \
                         arena.isCollision(node.x,node.y,clearance=True)):
                     continue
 
@@ -88,7 +86,7 @@ class AStar:
 
 if __name__ == "__main__":
     arena = Arena()
-    planner = AStar()
+    planner = AStar(arena)
     solution_found = False
     
     # Paint the obstacles node white
